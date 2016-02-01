@@ -15,24 +15,30 @@
         angular.injector(["ng"]).invoke(function($rootScope){
            window.scope = $rootScope;
         });
+        function Greeter(){
+            this.name = '';
+            this.message = '';
+            this.greet = function(){
+                this.message = 'Hi ' + this.name + ", Have a nice day!";
+            }
+        }
         $(document).ready(function(){
-            scope.name = '';
-            scope.greetMsg = '';
+            scope.greeter = new Greeter();
             $("#btnGreet").click(function(){
                 scope.$apply(function(){
-                    var msg = 'Hi ' + scope.name + ', Have a nice day!'; scope.greetMsg = msg;
+                    scope.greeter.greet();
                 });
             });
             $("#txtName").change(function(){
                 var name = this.value;
                 scope.$apply(function(){
-                    scope.name = name;
+                    scope.greeter.name = name;
                 })
             });
-            scope.$watch("greetMsg", function(newValue){
+            scope.$watch("greeter.message", function(newValue){
                 $("#divMessage").html(newValue);
             });
-            scope.$watch("name", function(newValue){
+            scope.$watch("greeter.name", function(newValue){
                 $("#txtName").val(newValue);
             });
         });
