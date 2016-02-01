@@ -48,50 +48,58 @@
 
         // React to user actions
         $("#txtBasic").change(function(){
-            calculator.set('basic', $("#txtBasic").val().toInt());
+            scope.$apply(function(){
+                scope.calculator.basic = $("#txtBasic").val().toInt();
+            });
         });
 
         $("#txtHra").change(function(){
-            calculator.set('hra', $("#txtHra").val().toInt());
+            scope.$apply(function(){
+                scope.calculator.hra = $("#txtHra").val().toInt();
+            });
         });
 
         $("#txtDa").change(function(){
-            calculator.set('da', $("#txtDa").val().toInt());
+            scope.$apply(function(){
+                scope.calculator.da = $("#txtDa").val().toInt();
+            });
         });
 
         $("#rangeTax").change(function(){
-            calculator.set('tax', $("#rangeTax").val().toInt());
+            scope.$apply(function(){
+                scope.calculator.tax = $("#rangeTax").val().toInt();
+            });
         });
 
         $("#btnCalculate").click(function(){
-            calculator.calculate();
+            scope.$apply(function(){
+                scope.calculator.calculate();
+            });
         });
 
 
         //React to model changes
-        calculator.onChange('basic', function(){
-            $("#txtBasic").val(calculator.get('basic'));
+        scope.$watch('calculator.basic', function(newValue){
+            $("#txtBasic").val(newValue);
         });
 
-        calculator.onChange('hra', function(){
-            $("#txtHra").val(calculator.get('hra'));
+        scope.$watch('calculator.hra', function(newValue){
+            $("#txtHra").val(newValue);
         });
 
-        calculator.onChange('da', function(){
-            $("#txtDa").val(calculator.get('da'));
+        scope.$watch('calculator.da', function(newValue){
+            $("#txtDa").val(newValue);
         });
 
-        calculator.onChange('tax', function(){
-            $("#rangeTax").val(calculator.get('tax'));
-            $("#spanTax").html(calculator.get('tax'));
+        scope.$watch('calculator.tax', function(newValue){
+            $("#rangeTax").val(newValue);
+            $("#spanTax").html(newValue);
         });
 
-        calculator.onChange('salary', function(){
-            $("#divResult").html(calculator.get('salary'));
+        scope.$watch('calculator.salary', function(newValue){
+            $("#divResult").html(newValue);
         });
-
-
-    })
+    });
 
     </script>
 </head>
