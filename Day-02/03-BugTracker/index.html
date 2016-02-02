@@ -68,27 +68,67 @@
                 this.isClosed = !this.isClosed;
             };
             return Bug;
-        })
+        });
 
+        bugTrackerApp.factory("bugStorage", function(Bug, $window){
+            var storage = $window.localStorage;
 
-        bugTrackerApp.controller('bugsController', function($scope){
-            $scope.bugs = [ ];
-            $scope.newBugName = ''
-            $scope.addNew = function(){
+            var maxBugId = 0;
+            function getBugsFromStorage(){
+                var result = [];
+                for(var i=0; i<storage.length; i++){
+                    var key = storage.key(i);
+                    var data = storage.getItem(key);
+                    var bugData = angular.fromJson(data);
+                    var bug = new Bug(bugData);
+                    maxBugId = bug.id > maxBugId ? bug.id : maxBugId;
+                    result.push(bug);
+                }
+                return result;
+            }
+            function addBugToStorage(bugName){
                 var newBug = new Bug({
-                    name : $scope.newBugName,
+                    id : ++maxBugId,
+                    name : bugName,
                     isClosed : false
                 });
+                saveBugToStorage(newBug);
+                return newBug;
+            }
+            function saveBugToStorage(bug){
+                storage.setItem(bug.id, angular.toJson(bug));
+            }
+            function removeBugFromStorage(bug){
+                storage.removeItem(bug.id);
+            }
+            return {
+                getAll : getBugsFromStorage,
+                addNew : addBugToStorage,
+                save : saveBugToStorage,
+                remove : removeBugFromStorage
+            }
+        });
+
+
+        bugTrackerApp.controller('bugsController', function($scope, Bug, bugStorage){
+            $scope.bugs = bugStorage.getAll();
+            $scope.newBugName = ''
+
+            $scope.addNew = function(){
+                var newBug = bugStorage.addNew($scope.newBugName);
                 $scope.bugs.push(newBug);
-                $scope.newBug = '';
+                $scope.newBugName = '';
             };
             $scope.toggleBug = function(bug){
                 bug.toggle();
+                bugStorage.save(bug);
             };
             $scope.removeClosed = function(){
                 for(var i=$scope.bugs.length-1; i>=0; i--)
-                    if ($scope.bugs[i].isClosed)
+                    if ($scope.bugs[i].isClosed){
+                        bugStorage.remove($scope.bugs[i]);
                         $scope.bugs.splice(i,1);
+                    }
             };
             $scope.getClosedCount = function(){
                 var result = 0;
