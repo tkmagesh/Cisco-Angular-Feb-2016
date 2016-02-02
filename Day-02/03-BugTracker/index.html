@@ -28,6 +28,18 @@
     6. Search for bugs - done
     7. Sort the bugs - done
     8. Persist the bugs in localStorage
+        window.localStorage
+            - key/value store
+            - key and value should be strings
+            - Use angular.toJson() and angular.fromJson() for serialization / deserialization
+            - APIs
+                setItem(key, value)
+                getItem(key) //=> value
+                removeItem(key)
+                clear()
+                key(index) //=> key at 'index'
+                length
+
     9. Improvise the bug display
     10. Display createdAt for each bug
     11. Persist the bugs in the server
@@ -44,24 +56,23 @@
                 }
         });*/
 
-        function Bug(defaults){
-            defaults = defaults || {};
-            this.name = defaults.name || '';
-            this.isClosed = defaults.isClosed || false;
-        }
-        Bug.prototype.toggle = function(){
-            this.isClosed = !this.isClosed;
-        };
 
+        bugTrackerApp.factory("Bug", function (){
+            function Bug(defaults){
+                defaults = defaults || {};
+                this.id = defaults.id || 0;
+                this.name = defaults.name || '';
+                this.isClosed = defaults.isClosed || false;
+            }
+            Bug.prototype.toggle = function(){
+                this.isClosed = !this.isClosed;
+            };
+            return Bug;
+        })
 
 
         bugTrackerApp.controller('bugsController', function($scope){
-            $scope.bugs = [
-                new Bug({ name : 'User authentication is wrong', isClosed : true}),
-                new Bug({ name : 'Server communication failure', isClosed : false}),
-                new Bug({ name : 'Data doesnt display', isClosed : false}),
-                new Bug({ name : 'statistics are not accurate', isClosed : true}),
-            ];
+            $scope.bugs = [ ];
             $scope.newBugName = ''
             $scope.addNew = function(){
                 var newBug = new Bug({
