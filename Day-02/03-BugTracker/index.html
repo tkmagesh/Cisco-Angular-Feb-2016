@@ -27,7 +27,7 @@
     5. Display statistics - done
     6. Search for bugs - done
     7. Sort the bugs - done
-    8. Persist the bugs in localStorage
+    8. Persist the bugs in localStorage - done
         window.localStorage
             - key/value store
             - key and value should be strings
@@ -110,7 +110,7 @@
         });
 
 
-        bugTrackerApp.controller('bugsController', function($scope, Bug, bugStorage){
+        bugTrackerApp.controller('bugsController', function($scope, bugStorage){
             $scope.bugs = bugStorage.getAll();
             $scope.newBugName = ''
 
@@ -137,6 +137,13 @@
                 return result;
             }
         });
+        bugTrackerApp.value("defaultTrimLength", 40)
+        bugTrackerApp.filter("trimText", function(defaultTrimLength){
+            return function(data, trimLength){
+                trimLength = trimLength || defaultTrimLength;
+                return data.length < trimLength ? data : data.substr(0,trimLength) + '...';
+            }
+        })
     </script>
 </head>
 <body ng-app="bugTrackerApp" ng-controller="bugsController">
@@ -174,7 +181,7 @@
                 ng-repeat="bug in (bugs | filter:searchBug | orderBy:sortBugBy:sortBugOrder)"
                 ng-click="toggleBug(bug)"
                 ng-class="{closed : bug.isClosed}"
-            >{{bug.name | lowercase}}</li>
+            >{{bug.name | trimText}}</li>
         </ol>
     </section>
 </body>
