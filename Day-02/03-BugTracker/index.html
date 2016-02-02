@@ -26,7 +26,7 @@
     4. Remove closed bugs - done
     5. Display statistics - done
     6. Search for bugs - done
-    7. Sort the bugs
+    7. Sort the bugs - done
     8. Persist the bugs in localStorage
     9. Improvise the bug display
     10. Display createdAt for each bug
@@ -88,19 +88,19 @@
 
     <section class="sort">
         <label for="">Order By:</label>
-        <input type="text" name="" id="">
+        <input type="text" ng-model="sortBugBy">
         <label for="">Descending ? :</label>
-        <input type="checkbox" name="" id="">
+        <input type="checkbox" ng-model="sortBugOrder">
     </section>
 
     <section class="list">
         <label>Bug :</label>
-        <input type="text" ng-model="newBug" >
+        <input type="text" ng-model="newBugName" >
         <input type="button" value="Add Bug" ng-click="addNew()">
         <input type="button" value="Remove Clsoed" ng-click="removeClosed()">
         <ol>
             <li
-                ng-repeat="bug in (bugs | filter:searchBug)"
+                ng-repeat="bug in (bugs | filter:searchBug | orderBy:sortBugBy:sortBugOrder)"
                 ng-click="toggleBug(bug)"
                 ng-class="{closed : bug.isClosed}"
             >{{bug.name | lowercase}}</li>
