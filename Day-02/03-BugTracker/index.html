@@ -35,24 +35,44 @@
     <script src="angular.min.js"></script>
     <script>
         var bugTrackerApp = angular.module('bugTrackerApp', []);
+       /* bugTrackerApp.value('Bug', function Bug(defaults){
+                defaults = defaults || {};
+                this.name = defaults.name || '';
+                this.isClosed = defaults.isClosed || false;
+                this.toggle = function(){
+                    this.isClosed = !this.isClosed;
+                }
+        });*/
+
+        function Bug(defaults){
+            defaults = defaults || {};
+            this.name = defaults.name || '';
+            this.isClosed = defaults.isClosed || false;
+        }
+        Bug.prototype.toggle = function(){
+            this.isClosed = !this.isClosed;
+        };
+
+
+
         bugTrackerApp.controller('bugsController', function($scope){
             $scope.bugs = [
-                { name : 'User authentication is wrong', isClosed : true},
-                { name : 'Server communication failure', isClosed : false},
-                { name : 'Data doesnt display', isClosed : false},
-                { name : 'statistics are not accurate', isClosed : true}
+                new Bug({ name : 'User authentication is wrong', isClosed : true}),
+                new Bug({ name : 'Server communication failure', isClosed : false}),
+                new Bug({ name : 'Data doesnt display', isClosed : false}),
+                new Bug({ name : 'statistics are not accurate', isClosed : true}),
             ];
             $scope.newBugName = ''
             $scope.addNew = function(){
-                var newBug = {
+                var newBug = new Bug({
                     name : $scope.newBugName,
                     isClosed : false
-                };
+                });
                 $scope.bugs.push(newBug);
                 $scope.newBug = '';
             };
             $scope.toggleBug = function(bug){
-                bug.isClosed = !bug.isClosed;
+                bug.toggle();
             };
             $scope.removeClosed = function(){
                 for(var i=$scope.bugs.length-1; i>=0; i--)
