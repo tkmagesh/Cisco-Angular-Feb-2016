@@ -6,20 +6,23 @@
     <style>
         .closed{
             color : red;
-            text-decoration: line;
+            text-decoration: line-through;
             font-weight: bold;
             font-style: italic;
         }
         section{
             margin-bottom: 10px;
         }
+        li{
+            cursor: pointer;
+        }
     </style>
     <!--
     Use Cases
     =========
-    1. Add a new bug
-    2. List the bugs
-    3. Toggle closed status of a bug
+    1. Add a new bug - done
+    2. List the bugs - done
+    3. Toggle closed status of a bug - done
     4. Remove closed bugs
     5. Display statistics
     6. Search for bugs
@@ -29,34 +32,65 @@
     10. Display createdAt for each bug
     11. Persist the bugs in the server
     -->
+    <script src="angular.min.js"></script>
+    <script>
+        var bugTrackerApp = angular.module('bugTrackerApp', []);
+        bugTrackerApp.controller('bugsController', function($scope){
+            $scope.bugs = [
+                { name : 'User authentication is wrong', isClosed : false},
+                { name : 'Server communication failure', isClosed : false},
+                { name : 'Data doesnt display', isClosed : false},
+                { name : 'statistics are not accurate', isClosed : false}
+            ];
+            $scope.newBugName = ''
+            $scope.addNew = function(){
+                var newBug = {
+                    name : $scope.newBugName,
+                    isClosed : false
+                };
+                $scope.bugs.push(newBug);
+                $scope.newBug = '';
+            };
+            $scope.toggleBug = function(bug){
+                bug.isClosed = !bug.isClosed;
+            };
+        });
+    </script>
 </head>
-<body>
+<body ng-app="bugTrackerApp" ng-controller="bugsController">
     <h1>Bug Tracker</h1>
-    <section class="stats">
+
+       <section class="stats">
         <span class="closed">2</span>
         <span> / </span>
-        <span class="open">5</span>
+        <span class="open">{{bugs.length}}</span>
     </section>
+
     <section class="search">
         <label for="">Search :</label>
         <input type="text" name="" id="">
         <label for="">isCompleted ? :</label>
         <input type="checkbox" name="" id="">
     </section>
+
     <section class="sort">
         <label for="">Order By:</label>
         <input type="text" name="" id="">
         <label for="">Descending ? :</label>
         <input type="checkbox" name="" id="">
     </section>
+
     <section class="list">
-        <labe>Bug :</labe>
-        <input type="text" name="" id="">
-        <input type="button" value="Add Bug">
+        <label>Bug :</label>
+        <input type="text" ng-model="newBug" >
+        <input type="button" value="Add Bug" ng-click="addNew()">
         <input type="button" value="Remove Clsoed">
         <ol>
-            <li class="closed">This is a closed bug</li>
-            <li>This is a open bug</li>
+            <li
+                ng-repeat="bug in bugs"
+                ng-click="toggleBug(bug)"
+                ng-class="{closed : bug.isClosed}"
+            >{{bug}}</li>
         </ol>
     </section>
 </body>
