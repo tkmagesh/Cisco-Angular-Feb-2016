@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="angular.min.js"></script>
+    <script>
+        var myApp = angular.module("myApp", []);
+        myApp.provider('greeter', function(){
+            var greetMsg = 'Have a nice day!'
+            return {
+                setGreetMsg : function(msg){
+                    greetMsg = msg;
+                },
+                $get : function(){
+                    return {
+                        greet : function(name){
+                            return ('Hi ' + name + ', ' + greetMsg);
+                        }
+                    }
+                }
+            }
+        });
+
+
+
+        myApp.config(function(greeterProvider){
+            console.log("app in config phase");
+            console.log(greeterProvider);
+            greeterProvider.setGreetMsg('Happy Holidays!');
+        });
+
+        myApp.run(function(greeter){
+            console.log("app in run phase");
+            console.log(greeter);
+        });
+
+        myApp.controller("greetController",function($scope, greeter){
+            $scope.greet = function(name){
+                $scope.message = greeter.greet(name);
+            }
+        });
+    </script>
+</head>
+<body ng-app="myApp" ng-controller="greetController">
+    <input type="text" ng-model="name">
+    <input type="button" value="Greet" ng-click="greet(name)">
+    <div>{{message}}</div>
+</body>
+</html>

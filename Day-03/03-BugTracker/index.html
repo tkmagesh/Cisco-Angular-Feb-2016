@@ -83,42 +83,53 @@
             return Bug;
         });
 
-        bugTrackerApp.factory("bugStorage", function(Bug, $window){
-            var storage = $window.localStorage;
+        bugTrackerApp.constant("defaultStorageOption", "localStorage");
 
-            var maxBugId = 0;
-            function getBugsFromStorage(){
-                var result = [];
-                for(var i=0; i<storage.length; i++){
-                    var key = storage.key(i);
-                    var data = storage.getItem(key);
-                    var bugData = angular.fromJson(data);
-                    var bug = new Bug(bugData);
-                    maxBugId = bug.id > maxBugId ? bug.id : maxBugId;
-                    result.push(bug);
-                }
-                return result;
-            }
-            function addBugToStorage(bugName){
-                var newBug = new Bug({
-                    id : ++maxBugId,
-                    name : bugName,
-                    isClosed : false
-                });
-                saveBugToStorage(newBug);
-                return newBug;
-            }
-            function saveBugToStorage(bug){
-                storage.setItem(bug.id, angular.toJson(bug));
-            }
-            function removeBugFromStorage(bug){
-                storage.removeItem(bug.id);
-            }
+        bugTrackerApp.provider("bugStorage", function(defaultStorageOption){
+            var _storageOption = defaultStorageOption;
             return {
-                getAll : getBugsFromStorage,
-                addNew : addBugToStorage,
-                save : saveBugToStorage,
-                remove : removeBugFromStorage
+                setStorage : function(storageOption){
+                    _storageOption = storageOption;
+                },
+                $get : function(Bug, $window){
+                            console.log("init bugStorage with " + _storageOption);
+                            var storage = $window[_storageOption];
+
+                            var maxBugId = 0;
+                            function getBugsFromStorage(){
+                                var result = [];
+                                for(var i=0; i<storage.length; i++){
+                                    var key = storage.key(i);
+                                    var data = storage.getItem(key);
+                                    var bugData = angular.fromJson(data);
+                                    var bug = new Bug(bugData);
+                                    maxBugId = bug.id > maxBugId ? bug.id : maxBugId;
+                                    result.push(bug);
+                                }
+                                return result;
+                            }
+                            function addBugToStorage(bugName){
+                                var newBug = new Bug({
+                                    id : ++maxBugId,
+                                    name : bugName,
+                                    isClosed : false
+                                });
+                                saveBugToStorage(newBug);
+                                return newBug;
+                            }
+                            function saveBugToStorage(bug){
+                                storage.setItem(bug.id, angular.toJson(bug));
+                            }
+                            function removeBugFromStorage(bug){
+                                storage.removeItem(bug.id);
+                            }
+                            return {
+                                getAll : getBugsFromStorage,
+                                addNew : addBugToStorage,
+                                save : saveBugToStorage,
+                                remove : removeBugFromStorage
+                            }
+                        }
             }
         });
 
@@ -157,7 +168,14 @@
             };
         });
 
+        bugTrackerApp.constant("storageOptions" , {
+            local : 'localStorage',
+            session : 'sessionStorage'
+        });
 
+        bugTrackerApp.config(function(bugStorageProvider, storageOptions){
+            bugStorageProvider.setStorage(storageOptions.local);
+        });
 
 
 
