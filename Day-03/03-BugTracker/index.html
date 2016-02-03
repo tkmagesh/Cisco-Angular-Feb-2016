@@ -60,22 +60,14 @@
                 length
 
     9. Improvise the bug display - done
-    10. Display createdAt for each bug
+    10. Display createdAt for each bug - done
     11. Persist the bugs in the server
     -->
     <script src="angular.min.js"></script>
     <script src="moment.js"></script>
+    <script src="utils.js"></script>
     <script>
-        var bugTrackerApp = angular.module('bugTrackerApp', []);
-       /* bugTrackerApp.value('Bug', function Bug(defaults){
-                defaults = defaults || {};
-                this.name = defaults.name || '';
-                this.isClosed = defaults.isClosed || false;
-                this.toggle = function(){
-                    this.isClosed = !this.isClosed;
-                }
-        });*/
-
+        var bugTrackerApp = angular.module('bugTrackerApp', ["utils"]);
 
         bugTrackerApp.factory("Bug", function (){
             function Bug(defaults){
@@ -130,46 +122,45 @@
             }
         });
 
+        bugTrackerApp.service("bugsCollection", function(bugStorage){
+            this.list = bugStorage.getAll();
 
-        bugTrackerApp.controller('bugsController', function($scope, bugStorage){
-            $scope.bugs = bugStorage.getAll();
-            $scope.newBugName = ''
-
-            $scope.addNew = function(){
-                var newBug = bugStorage.addNew($scope.newBugName);
-                $scope.bugs.push(newBug);
-                $scope.newBugName = '';
+            this.addNew = function(newBugName){
+                var newBug = bugStorage.addNew(newBugName);
+                this.list.push(newBug);
             };
-            $scope.toggleBug = function(bug){
+
+            this.toggleBug = function(bug){
                 bug.toggle();
                 bugStorage.save(bug);
             };
-            $scope.removeClosed = function(){
-                for(var i=$scope.bugs.length-1; i>=0; i--)
-                    if ($scope.bugs[i].isClosed){
-                        bugStorage.remove($scope.bugs[i]);
-                        $scope.bugs.splice(i,1);
+
+            this.removeClosed = function(){
+                for(var i=this.list.length-1; i>=0; i--)
+                    if (this.list[i].isClosed){
+                        bugStorage.remove(this.list[i]);
+                        this.list.splice(i,1);
                     }
             };
+
         });
 
+        bugTrackerApp.controller('bugsController', function($scope, bugsCollection){
+            console.log(bugsCollection);
 
+            $scope.bugs = bugsCollection;
+            $scope.newBugName = ''
 
-
-        bugTrackerApp.value("defaultTrimLength", 40)
-        bugTrackerApp.filter("trimText", function(defaultTrimLength){
-            return function(data, trimLength){
-                trimLength = trimLength || defaultTrimLength;
-                return data.length < trimLength ? data : data.substr(0,trimLength) + '...';
-            }
-        });
-
-        bugTrackerApp.value("momentApi", moment);
-        bugTrackerApp.filter('elapsed', function(momentApi){
-            return function(data){
-                return momentApi(data).fromNow();
+            $scope.addNew = function(){
+                bugsCollection.addNew($scope.newBugName);
+                $scope.newBugName = '';
             };
         });
+
+
+
+
+
 
         //filter - 1
         /*bugTrackerApp.filter('closedCount', function(){
@@ -212,9 +203,9 @@
     <h1>Bug Tracker</h1>
 
        <section class="stats">
-        <span class="closed">{{bugs | closedCount}}</span>
+        <span class="closed">{{bugs.list | closedCount}}</span>
         <span> / </span>
-        <span class="open">{{bugs.length}}</span>
+        <span class="open">{{bugs.list.length}}</span>
     </section>
 
     <section class="search">
@@ -237,14 +228,14 @@
         <label>Bug :</label>
         <input type="text" ng-model="newBugName" >
         <input type="button" value="Add Bug" ng-click="addNew()">
-        <input type="button" value="Remove Clsoed" ng-click="removeClosed()">
+        <input type="button" value="Remove Clsoed" ng-click="bugs.removeClosed()">
         <ol>
             <li
-                ng-repeat="bug in (bugs | filter:searchBug | orderBy:sortBugBy:sortBugOrder)"
+                ng-repeat="bug in (bugs.list | filter:searchBug | orderBy:sortBugBy:sortBugOrder)"
             >
                <div class="bug">
                    <div
-                       class="bugName" ng-click="toggleBug(bug)"
+                       class="bugName" ng-click="bugs.toggleBug(bug)"
                        ng-class="{closed : bug.isClosed}">
                         {{bug.name | trimText}}
                    </div>
