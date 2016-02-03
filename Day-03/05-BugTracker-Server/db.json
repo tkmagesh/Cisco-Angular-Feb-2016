@@ -13,12 +13,6 @@
       "createdAt": "2016-02-03T04:06:11.297Z"
     },
     {
-      "id": 3,
-      "name": "User transaction not committed",
-      "isClosed": true,
-      "createdAt": "2016-02-03T04:06:23.019Z"
-    },
-    {
       "id": 4,
       "name": "Textboxes are not aligned",
       "isClosed": false,
@@ -31,16 +25,16 @@
       "createdAt": "2016-02-03T04:19:34.764Z"
     },
     {
-      "id": 6,
-      "name": "Service is not working as predicted",
-      "isClosed": true,
-      "createdAt": "2016-02-03T05:04:28.176Z"
-    },
-    {
       "id": 7,
       "name": "JSON server is very slow",
-      "isClosed": true,
+      "isClosed": false,
       "createdAt": "2016-02-02T05:04:28.176Z"
+    },
+    {
+      "id": 8,
+      "name": "$http is not very dependable",
+      "isClosed": false,
+      "createdAt": "2016-02-03T06:51:10.288Z"
     }
   ]
 }
