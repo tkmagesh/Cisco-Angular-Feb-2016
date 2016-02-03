@@ -91,17 +91,25 @@
             return Bug;
         });
 
+        bugTrackerApp.service("bugStorage", function($http, Bug){
+            this.getAll = function(){
+                return $http
+                            .get('http://localhost:3000/bugs')
+                            .then(function(response){
+                                var result = response.data.map(function(bugData){
+                                    return new Bug(bugData);
+                                });
+                                return result;
+                            });
+            }
+        })
 
-
-        bugTrackerApp.controller('bugsController', function($scope, $http, Bug){
+        bugTrackerApp.controller('bugsController', function($scope, bugStorage, $http, Bug){
             $scope.bugs = [];
-            $http
-                .get('http://localhost:3000/bugs')
-                .then(function(response){
-                    $scope.bugs = response.data.map(function(bugData){
-                        return new Bug(bugData);
-                    });
-                });
+            bugStorage.getAll().then(function(bugs){
+                $scope.bugs = bugs;
+            });
+
             $scope.newBugName = ''
 
             $scope.addNew = function(){
